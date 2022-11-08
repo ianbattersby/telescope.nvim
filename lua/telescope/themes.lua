@@ -116,6 +116,7 @@ function themes.get_ivy(opts)
     layout_strategy = "bottom_pane",
     layout_config = {
       height = 25,
+      prompt_padding = 0,
     },
 
     border = true,

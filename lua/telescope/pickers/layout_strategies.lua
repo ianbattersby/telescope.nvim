@@ -864,6 +864,7 @@ layout_strategies.bottom_pane = make_documented_layout(
   vim.tbl_extend("error", shared_options, {
     preview_width = { "Change the width of Telescope's preview window", "See |resolver.resolve_width()|" },
     preview_cutoff = "When columns are less than this value, the preview will be disabled",
+    prompt_padding = "Define padding between prompt and result elements",
   }),
   function(self, max_columns, max_lines, layout_config)
     local initial_options = p_window.get_initial_window_options(self)
@@ -882,6 +883,9 @@ layout_strategies.bottom_pane = make_documented_layout(
     end
 
     local bs = get_border_size(self)
+
+    -- Get padding
+    local prompt_padding = type(layout_config.prompt_padding) == "number" and layout_config.prompt_padding or 0
 
     -- Cap over/undersized height
     height, _ = calc_size_and_spacing(height, max_lines, bs, 2, 3, 0)
@@ -907,8 +911,8 @@ layout_strategies.bottom_pane = make_documented_layout(
     -- Line
     if layout_config.prompt_position == "top" then
       prompt.line = max_lines - results.height - (1 + bs) + 1
-      results.line = prompt.line + 1
-      preview.line = results.line + bs
+      results.line = prompt.line + 1 + prompt_padding
+      preview.line = results.line + bs - prompt_padding
       if results.border == true then
         results.border = { 0, 1, 1, 1 }
       end
@@ -928,6 +932,7 @@ layout_strategies.bottom_pane = make_documented_layout(
       if results.border == true then
         results.border = { 1, 1, 0, 1 }
       end
+      results.height = results.height - prompt_padding
     else
       error(string.format("Unknown prompt_position: %s\n%s", self.window.prompt_position, vim.inspect(layout_config)))
     end
